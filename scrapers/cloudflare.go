@@ -31,6 +31,10 @@ func (info *CloudflareMetaInfo) ToJSON() []byte {
 	return b
 }
 
+func (info *CloudflareMetaInfo) GetIPAddr() string {
+	return info.ClientIp
+}
+
 func ScrapeMetainfoFromCloudflare(ctx context.Context, p constant.Proxy) (*CloudflareMetaInfo, error) {
 	body, err := internal.FetchWithProxy(ctx, p, CLOUDFLARE_META_INFO_SCRAPE_URL)
 	if err != nil {

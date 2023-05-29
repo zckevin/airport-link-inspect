@@ -44,6 +44,10 @@ func (info *IpsbMetaInfo) ToJSON() []byte {
 	return b
 }
 
+func (info *IpsbMetaInfo) GetIPAddr() string {
+	return info.IP
+}
+
 func ScrapeMetainfoFromIpsb(ctx context.Context, p constant.Proxy, ip net.IP) (*IpsbMetaInfo, error) {
 	u := fmt.Sprintf(IPSB_META_INFO_URL, ip.String())
 	body, err := internal.FetchWithProxy(ctx, p, u)

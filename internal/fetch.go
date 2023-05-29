@@ -44,6 +44,11 @@ func createHTTPClient(conn net.Conn) *http.Client {
 }
 
 func FetchWithProxy(ctx context.Context, p constant.Proxy, targetUrlString string) ([]byte, error) {
+	Logger.Debug().
+		Str("proxy", p.Addr()).
+		Str("desc", p.Name()).
+		Str("url", targetUrlString).
+		Msg("fetch")
 	conn, err := dialProxyConn(ctx, p, targetUrlString)
 	if err != nil {
 		return nil, err
