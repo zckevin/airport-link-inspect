@@ -56,6 +56,8 @@ func parseAccessPoint(resolverName string, link *LinkConfig, ips []net.IP) ([]IP
 			return scrapers.ScrapeMetainfoFromIpinfo(ctx, link.Proxy, ip)
 		case "ipsb":
 			return scrapers.ScrapeMetainfoFromIpsb(ctx, link.Proxy, ip)
+		case "ipqaros":
+			return scrapers.ScrapeMetainfoFromIpqaros(ctx, link.Proxy, ip)
 		default:
 			panic("unknown resolver name")
 		}
@@ -102,7 +104,7 @@ func ScrapeLinkInfo(link *LinkConfig) (_ *LinkInfo, err error) {
 		ProxyInfo: link.RawInfo,
 	}
 	accessPointFn := func(ctx context.Context) error {
-		infos, err := parseAccessPoint("ipinfo", link, ips)
+		infos, err := parseAccessPoint("ipqaros", link, ips)
 		if err != nil {
 			return errors.Wrap(err, "parse access point failed")
 		}
