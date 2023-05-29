@@ -4,8 +4,8 @@ import (
 	"context"
 	"sync"
 
-	safe "github.com/eminarican/safetypes"
 	"github.com/samber/lo"
+	"github.com/zckevin/tcp-link-inspect/internal/types"
 )
 
 func MapAllConcurrently[KeyT any, ResultT any](
@@ -42,17 +42,17 @@ func MapAllConcurrentlyAllSettled[KeyT any, ResultT any](
 	oldctx context.Context,
 	keys []KeyT,
 	callback func(ctx context.Context, key KeyT) (ResultT, error),
-) []safe.Result[ResultT] {
+) []types.Result[ResultT] {
 	ctx, cancel := context.WithCancel(oldctx)
 	defer cancel()
 
 	N := len(keys)
-	results := make([]safe.Result[ResultT], N)
+	results := make([]types.Result[ResultT], N)
 	var wg sync.WaitGroup
 	wg.Add(N)
 	fn := func(i int, key KeyT) {
 		defer wg.Done()
-		results[i] = safe.AsResult(callback(ctx, key))
+		results[i] = types.AsResult(callback(ctx, key))
 	}
 	for index, ip := range keys {
 		go fn(index, ip)
@@ -86,12 +86,12 @@ func PromiseAll(
 	return nil
 }
 
-func UnwrapAll[T any](results []safe.Result[*T]) []*T {
+func UnwrapAll[T any](results []types.Result[*T]) []*T {
 	return lo.Map(
-		lo.Filter(results, func(result safe.Result[*T], _ int) bool {
+		lo.Filter(results, func(result types.Result[*T], _ int) bool {
 			return result.IsOk() && (result.Unwrap() != nil)
 		}),
-		func(result safe.Result[*T], _ int) *T {
+		func(result types.Result[*T], _ int) *T {
 			return result.Unwrap()
 		})
 }
