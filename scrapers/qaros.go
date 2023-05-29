@@ -1,13 +1,7 @@
 package scrapers
 
 import (
-	"context"
 	"encoding/json"
-	"fmt"
-	"net"
-
-	"github.com/Dreamacro/clash/constant"
-	"github.com/zckevin/tcp-link-inspect/internal"
 )
 
 const (
@@ -55,17 +49,4 @@ func (info *IpqarosMetaInfo) ToJSON() []byte {
 
 func (info *IpqarosMetaInfo) GetIPAddr() string {
 	return info.Ip
-}
-
-func ScrapeMetainfoFromIpqaros(ctx context.Context, p constant.Proxy, ip net.IP) (*IpqarosMetaInfo, error) {
-	u := fmt.Sprintf(IPQAROS_META_INFO_URL, ip.String())
-	body, err := internal.FetchWithProxy(ctx, p, u)
-	if err != nil {
-		return nil, err
-	}
-	var meta IpqarosMetaInfo
-	if err := json.Unmarshal(body, &meta); err != nil {
-		return nil, err
-	}
-	return &meta, nil
 }

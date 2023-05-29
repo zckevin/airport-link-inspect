@@ -3,6 +3,7 @@ package internal
 import (
 	"compress/gzip"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -116,4 +117,16 @@ func urlToMetadata(rawURL string) (addr constant.Metadata, err error) {
 		DstPort: port,
 	}
 	return
+}
+
+func FetchAndUnmarshal[T any](ctx context.Context, p constant.Proxy, targetURL string) (*T, error) {
+	body, err := FetchWithProxyWithHistory(ctx, p, targetURL)
+	if err != nil {
+		return nil, err
+	}
+	var meta T
+	if err := json.Unmarshal(body, &meta); err != nil {
+		return nil, err
+	}
+	return &meta, nil
 }

@@ -60,3 +60,12 @@ func (o *Result[T]) Unwrap() T {
 	}
 	return *o.value
 }
+
+func (o *Result[T]) Expand() (T, error) {
+	if o.IsErr() {
+		var t T
+		return t, o.err
+	} else {
+		return *o.value, nil
+	}
+}

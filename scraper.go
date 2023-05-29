@@ -53,11 +53,14 @@ func parseAccessPoint(resolverName string, link *LinkConfig, ips []net.IP) ([]IP
 	callback := func(ctx context.Context, ip net.IP) (IPMetaInfo, error) {
 		switch resolverName {
 		case "ipinfo":
-			return scrapers.ScrapeMetainfoFromIpinfo(ctx, link.Proxy, ip)
+			templateURl := scrapers.IPINFO_META_INFO_URL
+			return internal.FetchAndUnmarshal[scrapers.IpinfoMetaInfo](ctx, link.Proxy, fmt.Sprintf(templateURl, ip))
 		case "ipsb":
-			return scrapers.ScrapeMetainfoFromIpsb(ctx, link.Proxy, ip)
+			templateURl := scrapers.IPSB_META_INFO_URL
+			return internal.FetchAndUnmarshal[scrapers.IpsbMetaInfo](ctx, link.Proxy, fmt.Sprintf(templateURl, ip))
 		case "ipqaros":
-			return scrapers.ScrapeMetainfoFromIpqaros(ctx, link.Proxy, ip)
+			templateURl := scrapers.IPQAROS_META_INFO_URL
+			return internal.FetchAndUnmarshal[scrapers.IpqarosMetaInfo](ctx, link.Proxy, fmt.Sprintf(templateURl, ip))
 		default:
 			panic("unknown resolver name")
 		}
