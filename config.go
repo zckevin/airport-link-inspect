@@ -33,7 +33,8 @@ type ConfigFile struct {
 
 func (config *ConfigFile) getMatchedNames(regex *regexp.Regexp) []string {
 	var names []string
-	for name := range config.Config.Proxies {
+	for _, mapping := range config.RawConfig.Proxy {
+		name := mapping["name"].(string)
 		if regex.MatchString(name) {
 			names = append(names, name)
 		}
