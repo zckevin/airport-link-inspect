@@ -13,10 +13,10 @@ import (
 
 type ipslice []net.IP
 
-func (ips ipslice) String() string {
+func (ips ipslice) ToString(port int) string {
 	var key string
 	for _, ip := range ips {
-		key += ip.String()
+		key += fmt.Sprintf("%s:%d,", ip.String(), port)
 	}
 	return key
 }
@@ -31,18 +31,21 @@ func (ips ipslice) isBlocked() bool {
 }
 
 var (
-	mu      sync.Mutex
+	mu sync.Mutex
+	// use ip as key instead of host, because multiple hosts may share the same ip
+	// map key is "ip_1:port,ip_2:port,..."
 	history map[string]struct{} = make(map[string]struct{})
 )
 
-func upsetHistory(ips ipslice) bool {
+func upsetHistory(ips ipslice, port int) bool {
 	mu.Lock()
 	defer mu.Unlock()
 
-	if _, ok := history[ips.String()]; ok {
+	key := ips.ToString(port)
+	if _, ok := history[key]; ok {
 		return false
 	}
-	history[ips.String()] = struct{}{}
+	history[key] = struct{}{}
 	return true
 }
 
@@ -90,7 +93,7 @@ func ScrapeLinkInfo(link *LinkConfig) (_ *LinkInfo, err error) {
 		return nil, fmt.Errorf("non-public ip")
 	}
 	// if access point ip(s) are scraped before, skip the scraping process
-	if appended := upsetHistory(ips); !appended {
+	if appended := upsetHistory(ips, link.Port()); !appended {
 		return nil, nil
 	}
 
@@ -115,7 +118,7 @@ func ScrapeLinkInfo(link *LinkConfig) (_ *LinkInfo, err error) {
 		return nil
 	}
 	rttFn := func(ctx context.Context) error {
-		minRtt, err := internal.ProbeLinkMinRtt(2, link.Proxy)
+		minRtt, err := internal.ProbeLinkMinRtt(3, link.Proxy)
 		if err != nil {
 			return errors.Wrap(err, "probe link min rtt failed")
 		}

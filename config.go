@@ -26,6 +26,15 @@ func newLinkConfig(config *ConfigFile, name string) (*LinkConfig, error) {
 	return &LinkConfig{RawInfo: rawInfo, Proxy: proxy, Desc: name}, nil
 }
 
+func (link *LinkConfig) Port() int {
+	if link.RawInfo != nil {
+		if port, ok := link.RawInfo["port"].(int); ok {
+			return port
+		}
+	}
+	return 0
+}
+
 type ConfigFile struct {
 	RawConfig *config.RawConfig
 	Config    *config.Config

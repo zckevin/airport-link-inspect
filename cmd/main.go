@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 
@@ -28,5 +29,9 @@ func main() {
 		func(ctx context.Context, link *tcplinkinspect.LinkConfig) (*tcplinkinspect.LinkInfo, error) {
 			return tcplinkinspect.ScrapeLinkInfo(link)
 		})
-	fmt.Printf("%+v\n", internal.UnwrapAll(results))
+	output, err := json.Marshal(internal.UnwrapAll(results))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(output))
 }
