@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"compress/gzip"
 	"context"
 	"fmt"
 	"io"
@@ -59,6 +60,8 @@ func FetchWithProxy(ctx context.Context, p constant.Proxy, targetUrlString strin
 	if err != nil {
 		return nil, err
 	}
+	req.Header.Set("Accept-Encoding", "gzip")
+	// req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
 	req = req.WithContext(ctx)
 
 	client := createHTTPClient(conn)
@@ -74,7 +77,18 @@ func FetchWithProxy(ctx context.Context, p constant.Proxy, targetUrlString strin
 		err = fmt.Errorf("http status code: %d", resp.StatusCode)
 		return nil, err
 	}
-	return io.ReadAll(resp.Body)
+
+	var body io.ReadCloser
+	switch resp.Header.Get("Content-Encoding") {
+	case "gzip":
+		body, _ = gzip.NewReader(resp.Body)
+		defer body.Close()
+	default:
+		body = resp.Body
+	}
+	buf, err := io.ReadAll(body)
+	Logger.Debug().Str("resp_body", string(buf)).Msg(targetUrlString)
+	return buf, err
 }
 
 func urlToMetadata(rawURL string) (addr constant.Metadata, err error) {
