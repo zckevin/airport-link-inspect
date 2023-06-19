@@ -2,10 +2,13 @@ package internal
 
 import (
 	"context"
+	"net/http"
+	_ "net/http/pprof"
 	"sync"
 
 	"github.com/samber/lo"
 	"github.com/zckevin/tcp-link-inspect/internal/types"
+	"golang.org/x/exp/constraints"
 )
 
 func MapAllConcurrently[KeyT any, ResultT any](
@@ -94,4 +97,37 @@ func UnwrapAll[T any](results []types.Result[*T]) []*T {
 		func(result types.Result[*T], _ int) *T {
 			return result.Unwrap()
 		})
+}
+
+func Min[T constraints.Ordered](a, b T) T {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func Max[T constraints.Ordered](a, b T) T {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func Abs[T constraints.Signed](a T) T {
+	if a < 0 {
+		return -a
+	}
+	return a
+}
+
+func SpawnPprofServer() {
+	// if !pprofServerStarted.CompareAndSwap(false, true) {
+	// 	return
+	// }
+	go func() {
+		err := http.ListenAndServe("localhost:6060", nil)
+		if err != nil {
+			panic(err)
+		}
+	}()
 }

@@ -16,7 +16,7 @@ import (
 
 type JsonBody map[string]any
 
-func dialProxyConn(ctx context.Context, p constant.Proxy, targetUrlString string) (net.Conn, error) {
+func DialProxyConn(ctx context.Context, p constant.Proxy, targetUrlString string) (net.Conn, error) {
 	addr, err := urlToMetadata(targetUrlString)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func FetchWithProxy(ctx context.Context, p constant.Proxy, targetUrlString strin
 		Str("desc", p.Name()).
 		Str("url", targetUrlString).
 		Msg("fetch")
-	conn, err := dialProxyConn(ctx, p, targetUrlString)
+	conn, err := DialProxyConn(ctx, p, targetUrlString)
 	if err != nil {
 		return nil, err
 	}

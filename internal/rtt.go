@@ -22,7 +22,7 @@ func ProbeLinkMinRtt(N int, p constant.Proxy) (int, error) {
 		Str("url", targetUrlString).
 		Msg("probe_rtt")
 
-	conn, err := dialProxyConn(context.Background(), p, targetUrlString)
+	conn, err := DialProxyConn(context.Background(), p, targetUrlString)
 	if err != nil {
 		return 0, err
 	}
