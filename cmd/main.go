@@ -58,7 +58,7 @@ func main() {
 		}
 	*/
 	links := getProxyByMatcher(*configFile, "HK")
-	g := http2ping.NewHTTP2PingGroup(http2ping.HTTP2_SERVER, links)
+	g, _ := http2ping.NewHTTP2PingGroup(http2ping.HTTP2_SERVER, links, 0.2)
 	// go func() {
 	// 	time.Sleep(3 * time.Second)
 	// 	log.Println("=========")
@@ -66,7 +66,7 @@ func main() {
 	// }()
 	for {
 		func() {
-			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
 			if best := g.GetMinRttProxy(ctx); best != nil {
 				fmt.Println("===", best.Name(), time.Now())

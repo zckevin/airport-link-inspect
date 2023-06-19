@@ -2,6 +2,7 @@ package http2ping
 
 import (
 	"context"
+	"fmt"
 	"sync/atomic"
 	"time"
 
@@ -12,24 +13,32 @@ import (
 var _ PingerGroup = (*http2PingGroup)(nil)
 
 type http2PingGroup struct {
-	pingers []Pinger
-	dieCh   chan struct{}
+	pingers   []Pinger
+	dieCh     chan struct{}
+	tolerance float32
 
 	best         atomic.Value
 	hasBest      atomic.Bool
 	lastBestTime atomic.Value
 }
 
-func NewHTTP2PingGroup(serverURL string, proxies []constant.Proxy) PingerGroup {
+func NewHTTP2PingGroup(serverURL string, proxies []constant.Proxy, tolerance float32) (PingerGroup, error) {
 	pingers := lo.Map(proxies, func(proxy constant.Proxy, _ int) Pinger {
 		return NewHTTP2PingerWrapper(serverURL, proxy)
 	})
+	if len(pingers) == 0 {
+		return nil, fmt.Errorf("no pingers")
+	}
+	if tolerance < 0 {
+		return nil, fmt.Errorf("tolerance must not be negative")
+	}
 	g := &http2PingGroup{
-		pingers: pingers,
-		dieCh:   make(chan struct{}),
+		pingers:   pingers,
+		tolerance: tolerance,
+		dieCh:     make(chan struct{}),
 	}
 	go g.loop(time.Second)
-	return g
+	return g, nil
 }
 
 func (g *http2PingGroup) loop(interval time.Duration) {
@@ -78,14 +87,6 @@ func (g *http2PingGroup) GetMinRttProxy(ctx context.Context) constant.Proxy {
 		go pinger.RacingNextSmoothRtt(ctx, resultCh)
 	}
 	return <-resultCh
-}
-
-func (g *http2PingGroup) Swap(ctx context.Context, current constant.Proxy) constant.Proxy {
-	best := g.GetMinRttProxy(ctx)
-	if best != nil && best != current {
-		return best
-	}
-	return nil
 }
 
 func (g *http2PingGroup) Close() error {

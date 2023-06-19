@@ -14,5 +14,4 @@ type Pinger interface {
 
 type PingerGroup interface {
 	GetMinRttProxy(ctx context.Context) constant.Proxy
-	Swap(ctx context.Context, current constant.Proxy) constant.Proxy
 }

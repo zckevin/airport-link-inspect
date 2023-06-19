@@ -3,12 +3,12 @@ package internal
 import (
 	"context"
 	"net/http"
-	_ "net/http/pprof"
 	"sync"
 
 	"github.com/samber/lo"
 	"github.com/zckevin/tcp-link-inspect/internal/types"
 	"golang.org/x/exp/constraints"
+	// _ "net/http/pprof"
 )
 
 func MapAllConcurrently[KeyT any, ResultT any](
@@ -121,9 +121,6 @@ func Abs[T constraints.Signed](a T) T {
 }
 
 func SpawnPprofServer() {
-	// if !pprofServerStarted.CompareAndSwap(false, true) {
-	// 	return
-	// }
 	go func() {
 		err := http.ListenAndServe("localhost:6060", nil)
 		if err != nil {
