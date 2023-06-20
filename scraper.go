@@ -130,10 +130,15 @@ func ScrapeLinkInfo(link *LinkConfig) (_ *LinkInfo, err error) {
 		result.MinRtt = minRtt
 		return nil
 	}
+	supportsUDPFn := func(ctx context.Context) error {
+		result.SupportsUDP = internal.IsUDPForwardAvailable(link.Proxy)
+		return nil
+	}
 	err = internal.PromiseAll(context.Background(), []func(ctx context.Context) error{
 		accessPointFn,
 		landingPointFn,
 		rttFn,
+		supportsUDPFn,
 	})
 	if err != nil {
 		return nil, err
