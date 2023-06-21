@@ -8,10 +8,11 @@ especially for services using IEPL/IPLC forwarding.
 It would return the following information:
 
 - desc: name of the proxy
+- proxy_info: proxy info in Clash config file
 - access_point: domestic access server's ip metadata
 - landing_point: overseas landing server's ip metadata
 - min_rtt: minimum round trip time(ms) probing https://www.gstatic.com/generate_204
-- proxy_info: proxy info in Clash config file
+- supports_udp: if proxy supports udp forwarding
 
 ## Usage
 
@@ -57,6 +58,7 @@ go run ./cmd/main.go -config $HOME/.config/clash/config.yaml -matcher 香港 | j
     "region": "Central and Western District"
   },
   "min_rtt": 51,
+  "supports_udp": true,
   "proxy_info": {
     "cipher": "aes-256-gcm",
     "name": "香港1",
