@@ -1,4 +1,4 @@
-package tcplinkinspect
+package airportlinkinspect
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	"github.com/pkg/errors"
-	"github.com/zckevin/tcp-link-inspect/internal"
-	"github.com/zckevin/tcp-link-inspect/scrapers"
+	"github.com/zckevin/airport-link-inspect/internal"
+	"github.com/zckevin/airport-link-inspect/scrapers"
 )
 
 type ipslice []net.IP
@@ -76,7 +76,7 @@ func ScrapeLinkInfo(link *LinkConfig) (_ *LinkInfo, err error) {
 	logErrorFn := func(err error) {
 		internal.Logger.Err(err).
 			Str("proxy", link.Proxy.Addr()).
-			Str("desc", link.Desc).
+			Str("name", link.Name).
 			Msg("")
 	}
 	defer func() {
@@ -103,7 +103,7 @@ func ScrapeLinkInfo(link *LinkConfig) (_ *LinkInfo, err error) {
 	}
 
 	result := &LinkInfo{
-		Desc:      link.Desc,
+		Name:      link.Name,
 		ProxyInfo: link.RawInfo,
 	}
 	accessPointFn := func(ctx context.Context) error {

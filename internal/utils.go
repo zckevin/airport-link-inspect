@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/samber/lo"
-	"github.com/zckevin/tcp-link-inspect/internal/types"
+	"github.com/zckevin/airport-link-inspect/internal/types"
 	"golang.org/x/exp/constraints"
 	// _ "net/http/pprof"
 )

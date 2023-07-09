@@ -1,4 +1,4 @@
-package tcplinkinspect
+package airportlinkinspect
 
 import "encoding/json"
 
@@ -8,7 +8,7 @@ type IPMetaInfo interface {
 }
 
 type LinkInfo struct {
-	Desc         string       `json:"desc"`
+	Name         string       `json:"name"`
 	ProxyInfo    ProxyRawInfo `json:"proxy_info"`
 	AccessPoint  []IPMetaInfo `json:"access_point"`
 	LandingPoint IPMetaInfo   `json:"landing_point"`

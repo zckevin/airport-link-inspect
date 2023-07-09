@@ -1,8 +1,9 @@
-package tcplinkinspect
+package airportlinkinspect
 
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 
 	"github.com/Dreamacro/clash/config"
@@ -12,18 +13,26 @@ import (
 type ProxyRawInfo map[string]any
 
 type LinkConfig struct {
-	Desc    string
+	// airport brand name
+	GroupName string
+
+	// name in config file
+	Name string
+	// kvs like address, port, etc.
 	RawInfo ProxyRawInfo
-	Proxy   constant.Proxy
+
+	Proxy constant.Proxy
 }
 
-func newLinkConfig(config *ConfigFile, name string) (*LinkConfig, error) {
-	rawInfo := config.getRawInfo(name)
-	proxy := config.getConfig(name)
+func newLinkConfig(config *ConfigFile, groupName, name string) (*LinkConfig, error) {
+	var (
+		rawInfo = config.getRawInfo(name)
+		proxy   = config.getConfig(name)
+	)
 	if rawInfo == nil || proxy == nil {
 		return nil, fmt.Errorf("no proxy found with name: %s", name)
 	}
-	return &LinkConfig{RawInfo: rawInfo, Proxy: proxy, Desc: name}, nil
+	return &LinkConfig{RawInfo: rawInfo, Proxy: proxy, GroupName: groupName, Name: name}, nil
 }
 
 func (link *LinkConfig) Port() int {
@@ -85,7 +94,7 @@ func GetLinkConfigWithName(configPath string, name string) (*LinkConfig, error) 
 	if err != nil {
 		return nil, err
 	}
-	return newLinkConfig(config, name)
+	return newLinkConfig(config, filepath.Base(configPath), name)
 }
 
 func GetLinkConfigMatchesRegex(configPath string, regexString string) ([]*LinkConfig, error) {
@@ -100,7 +109,7 @@ func GetLinkConfigMatchesRegex(configPath string, regexString string) ([]*LinkCo
 	names := config.getMatchedNames(regex)
 	configs := make([]*LinkConfig, len(names))
 	for i, name := range names {
-		config, err := newLinkConfig(config, name)
+		config, err := newLinkConfig(config, filepath.Base(configPath), name)
 		if err != nil {
 			return nil, err
 		}

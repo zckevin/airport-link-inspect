@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/Dreamacro/clash/constant"
-	"github.com/zckevin/tcp-link-inspect/internal"
+	"github.com/zckevin/airport-link-inspect/internal"
 )
 
 const (

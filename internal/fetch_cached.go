@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/Dreamacro/clash/constant"
-	"github.com/zckevin/tcp-link-inspect/internal/types"
+	"github.com/zckevin/airport-link-inspect/internal/types"
 )
 
 type bytesResult = types.Result[[]byte]
